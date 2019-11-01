@@ -9,13 +9,12 @@ mongoose.connect(`mongodb://${config.MONGO_HOST}/`, {
   dbName: config.MONGO_DBNAME,
   useNewUrlParser: true,
   useCreateIndex: true,
-  useFindAndModify: true,
+  useFindAndModify: false,
   useUnifiedTopology: true,
 });
-
 const { connection: db } = mongoose;
 
-db.on('connection', () => {
+db.on('connected', () => {
   console.log('database is connected!');
 });
 
@@ -28,5 +27,3 @@ db.on('error', (err) => {
 });
 
 module.exports = db;
-
-//

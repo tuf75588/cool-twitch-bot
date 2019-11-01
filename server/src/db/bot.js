@@ -5,6 +5,10 @@ const BotSchema = new Schema({
     type: String,
     required: true,
   },
+  name: {
+    type: String,
+    unique: true,
+  },
 });
 
 const BotModel = model('bot', BotSchema);
