@@ -2,10 +2,12 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
-
+const morgan = require('morgan');
 require('dotenv').config();
 const config = require('./config');
+require('./db');
 const app = express();
+app.use(morgan('combined'));
 
 app.get('/', (req, res) => {
   res.json({ hello: 'world!' });

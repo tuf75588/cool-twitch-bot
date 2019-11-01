@@ -12,17 +12,35 @@ router.get('/', async (req, res) => {
     client_id: config.TWITCH_CLIENT_ID,
     redirect_uri,
     response_type: 'code',
-    scope: 'user:edit',
-    forceVerify: true,
+    scope: req.query.scope,
+    force_verify: true,
   });
 
   const redirectUrl = await `${authAPI.defaults.baseURL}/authorize?${qs}`;
   res.redirect(redirectUrl);
 });
 
-router.get('/callback', (req, res) => {
-  console.log(req.query);
-  res.json({ hello: 'callback!' });
+router.get('/callback', async (req, res) => {
+  const { code } = req.query;
+  const qs = new URLSearchParams({
+    client_id: config.TWITCH_CLIENT_ID,
+    client_secret: config.TWITCH_CLIENT_SECRET,
+    code,
+    grant_type: 'authorization_code',
+    redirect_uri,
+  });
+  try {
+    const response = await authAPI.post(`/token?${qs}`);
+    console.log(response);
+    res.json({ hello: 'callback!' });
+  } catch (error) {
+    res.json({
+      error: error.message,
+      body: error.response.message,
+    });
+  }
 });
 
 module.exports = router;
+
+//
