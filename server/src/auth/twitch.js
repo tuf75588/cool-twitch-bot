@@ -1,8 +1,9 @@
-const axios = require('axios');
 const express = require('express');
+const axios = require('axios');
 const router = express.Router();
 const config = require('../config');
 const botModel = require('../db/bot');
+const jwt = require('../lib/jwt');
 const channelModel = require('../db/channel');
 const userModel = require('../db/user');
 const twitchAPI = require('../lib/twitch-api');
@@ -59,8 +60,11 @@ router.get('/callback', async (req, res) => {
     // );
     // bot.refresh_token = response.data.refresh_token;
     // await bot.save();
+    const loginToken = await jwt.sign({ twitchId });
+    console.log(response);
     res.json({
       message: '🤖',
+      loginToken,
       user,
       channel,
     });

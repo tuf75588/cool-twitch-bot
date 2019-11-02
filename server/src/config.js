@@ -10,7 +10,7 @@ require('dotenv').config();
  * @prop {string} MONGO_PASS MongoDB Password
  * @prop {string} MONGO_USER MongoDB username
  * @prop {string} MONGO_DBNAME MongoDB database name
- * @prop {string} JWT_SECRET
+ * @prop {string} JWT_SECRET JWT for verifying channelId
  */
 
 /**
@@ -18,7 +18,7 @@ require('dotenv').config();
  */
 
 const config = {
-	...process.env,
+  ...process.env,
 };
 
 module.exports = config;

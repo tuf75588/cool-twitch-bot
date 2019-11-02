@@ -1,15 +1,28 @@
 const { Schema, model } = require('mongoose');
 
-const ChannelSchema = new Schema({
-  twitchId: {
-    type: String,
-    unique: true,
+const ChannelSchema = new Schema(
+  {
+    twitchId: {
+      type: String,
+      unique: true,
+    },
+    enabled: {
+      type: Boolean,
+      default: false,
+    },
   },
-  enabled: {
-    type: Boolean,
-    default: false,
+  {
+    versionKey: false,
   },
-});
+);
+
+/**
+ * @typedef ChannelModel
+ * @prop {string} twitchId
+ * @prop {boolean} enabled
+ */
+
+/** @type {ChannelModel | import('mongoose').Model} */
 
 const channelModel = model('channel', ChannelSchema);
 
