@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const config = require('../config');
 const botModel = require('../db/bot');
+const twitchAPI = require('../lib/twitch-api');
 const redirect_uri = `${config.TWITCH_CLIENT_REDIR_HOST}/auth/twitch/callback`;
 const authAPI = axios.create({
   baseURL: 'https://id.twitch.tv/oauth2',
@@ -36,6 +37,9 @@ router.get('/callback', async (req, res) => {
 
   try {
     const response = await authAPI.post(`/token?${qs}`);
+    const login = await twitchAPI.getUsers({
+      token: response.data.access_token,
+    });
     // const bot = await botModel.findOneAndUpdate(
     //   { name: 'atdbot' },
     //   { name: 'atdbot' },
@@ -44,6 +48,7 @@ router.get('/callback', async (req, res) => {
     // bot.refresh_token = response.data.refresh_token;
     // await bot.save();
     res.json({
+      login,
       message: Object.keys(response.data),
     });
   } catch (error) {
