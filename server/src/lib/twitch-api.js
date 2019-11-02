@@ -19,12 +19,14 @@ const helix = axios.create({
  */
 
 async function getUsers({ token } = {}) {
-  const response = await helix.get('/users', {
+  const {
+    data: { data },
+  } = await helix.get('/users', {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
-  return response.data || null;
+  return data[0] || null;
 }
 
 module.exports = {

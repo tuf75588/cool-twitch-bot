@@ -3,6 +3,8 @@ const express = require('express');
 const router = express.Router();
 const config = require('../config');
 const botModel = require('../db/bot');
+const channelModel = require('../db/channel');
+const userModel = require('../db/user');
 const twitchAPI = require('../lib/twitch-api');
 const redirect_uri = `${config.TWITCH_CLIENT_REDIR_HOST}/auth/twitch/callback`;
 const authAPI = axios.create({
@@ -33,13 +35,23 @@ router.get('/callback', async (req, res) => {
   });
   const options = {
     upsert: true,
+    new: true,
   };
 
   try {
     const response = await authAPI.post(`/token?${qs}`);
-    const login = await twitchAPI.getUsers({
+    const { id: twitchId } = await twitchAPI.getUsers({
       token: response.data.access_token,
     });
+
+    const [user, channel] = await Promise.all([
+      userModel.findOneAndUpdate(
+        { twitchId },
+        { twitchId, refresh_token: response.data.refresh_token },
+        options,
+      ),
+      channelModel.findOneAndUpdate({ twitchId }, { twitchId }, options),
+    ]);
     // const bot = await botModel.findOneAndUpdate(
     //   { name: 'atdbot' },
     //   { name: 'atdbot' },
@@ -48,8 +60,9 @@ router.get('/callback', async (req, res) => {
     // bot.refresh_token = response.data.refresh_token;
     // await bot.save();
     res.json({
-      login,
-      message: Object.keys(response.data),
+      message: '🤖',
+      user,
+      channel,
     });
   } catch (error) {
     res.json({
