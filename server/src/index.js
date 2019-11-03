@@ -3,11 +3,15 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+
 const middleware = require('./middleware');
 require('dotenv').config();
 const config = require('./config');
 require('./db');
 const app = express();
+
+const bot = require('./bot');
+bot.init();
 app.use(cors());
 app.use(helmet());
 app.use(morgan('combined'));

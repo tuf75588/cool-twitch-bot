@@ -61,7 +61,7 @@ router.get('/callback', async (req, res) => {
     // bot.refresh_token = response.data.refresh_token;
     // await bot.save();
     const loginToken = await jwt.sign({ twitchId });
-    console.log(response);
+
     res.json({
       message: '🤖',
       loginToken,
