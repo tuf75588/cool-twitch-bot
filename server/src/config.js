@@ -18,7 +18,7 @@ require('dotenv').config();
  */
 
 const config = {
-  ...process.env,
+	...process.env,
 };
 
 module.exports = config;
