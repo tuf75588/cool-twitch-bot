@@ -51,7 +51,9 @@ async function getAccessToken(refresh_token) {
  * @return {TwitchAPIUser[]}
  */
 async function getUsers({ id = [], token }) {
+	if (!id.length) return [];
 	const qs = new URLSearchParams();
+	// TODO: handle more than 100 ids
 	for (const n of id) {
 		qs.append('id', n);
 	}

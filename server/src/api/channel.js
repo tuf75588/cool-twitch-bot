@@ -1,33 +1,31 @@
 const express = require('express');
 const router = express.Router();
 const channelModel = require('../db/channel');
+const { partChannels, joinChannels } = require('../bot');
 router.patch('/:twitchId', async (req, res, next) => {
-  //this endpoint will be for updating a channel with a given id
-  const { twitchId } = req.params;
-  const { enabled } = req.body;
-  //Todo: check manager collection too, instead of just id
-
-  if (enabled === undefined || typeof enabled !== 'boolean') {
-    return next(new Error('Enabled must be of type: boolean'));
-  }
-  try {
-    const channel = await channelModel.findOneAndUpdate(
-      { twitchId },
-      { enabled },
-      { new: true },
-    );
-
-    if (!channel) {
-      return next();
-    }
-    res.json(channel);
-  } catch (error) {
-    return next(error);
-  }
-  if (twitchId !== req.user.twitchId) {
-    const error = new Error('now allowed!');
-    return next(error);
-  }
+	const { twitchId } = req.params;
+	const { enabled } = req.body;
+	if (enabled === undefined || typeof enabled !== 'boolean') {
+		return next(new Error('Enabled must be a boolean.'));
+	}
+	try {
+		const channel = await channelModel.findOneAndUpdate(
+			{ twitchId },
+			{ enabled },
+			{ new: true },
+		);
+		if (!channel) {
+			return next();
+		}
+		if (enabled) {
+			await joinChannels([twitchId]);
+		} else {
+			await partChannels([twitchId]);
+		}
+		return res.json(channel);
+	} catch (error) {
+		return next(error);
+	}
 });
 
 module.exports = router;

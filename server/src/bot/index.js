@@ -12,15 +12,18 @@ async function getClient(token) {
 	if (client) {
 		return client;
 	}
+
 	try {
 		const bot = await botModel.findOne({});
+
 		if (!token) {
 			({ access_token: token } = await twitchAPI.getAccessToken(
 				bot.refresh_token,
 			));
 		}
-		const botUser = twitchAPI.getUser({ token });
-		//eslint-disable-next-line
+		const botUser = await twitchAPI.getUser({ token });
+
+		// eslint-disable-next-line
 		client = new tmi.Client({
 			connection: {
 				secure: true,
@@ -32,10 +35,14 @@ async function getClient(token) {
 			},
 			options: { debug: true },
 		});
+
+		client.on('message', messageHandler);
+
 		await client.connect();
 	} catch (error) {
-		console.error('Error connecting to Twitch...', error);
+		console.error('Error connecting to twitch...', error);
 	}
+
 	return client;
 }
 
@@ -46,11 +53,22 @@ function getToken() {
 async function init() {
 	try {
 		await getClient();
-		const dbChannels = await channelModel.findOne({ enabled: true });
+		const dbChannels = await channelModel.find({ enabled: true });
 		const id = dbChannels.map((c) => c.twitchId);
 		await joinChannels(id);
 	} catch (error) {
-		console.error('error connecting to twitch...', error);
+		console.error('Error connecting to twitch...', error);
+	}
+}
+
+async function partChannels(id) {
+	await getClient();
+	const channels = await twitchAPI.getUsers({
+		token: getToken(),
+		id,
+	});
+	for (const channel of channels) {
+		await Promise.all([client.part(channel.login), sleep(350)]);
 	}
 }
 
@@ -61,11 +79,32 @@ async function joinChannels(id) {
 		id,
 	});
 	for (const channel of channels) {
-		//wait at least 350ms between channel joins
 		await Promise.all([client.join(channel.login), sleep(350)]);
+	}
+}
+
+/**
+ *
+ * @param {string} channel
+ * @param {import('tmi.js').ChatUserstate} tags
+ * @param {string} message
+ * @param {boolean} self
+ */
+async function messageHandler(channel, tags, message, self) {
+	if (message.self || tags['message-type'] === 'whisper') return;
+	//make sure its a command starting with the appropriate prefix
+	if (message.startsWith('!')) {
+		const arguments = message.slice(1).split(' ');
+		const commandName = arguments.shift().toLowerCase();
+		const channelId = tags['room-id'];
+		if (commandName === 'echo') {
+			await client.say(channel, arguments.join(' '));
+		}
 	}
 }
 
 module.exports = {
 	init,
+	joinChannels,
+	partChannels,
 };
