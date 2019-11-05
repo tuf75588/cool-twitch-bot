@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "seeds": "node src/db/seeds/index.js"
   },
   "keywords": [],
   "author": "Andrew Davis <develop.it4@gmail.com>",

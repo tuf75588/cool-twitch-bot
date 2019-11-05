@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const globals = require('./db/seeds/index');
+
 const middleware = require('./middleware');
 require('dotenv').config();
 const config = require('./config');

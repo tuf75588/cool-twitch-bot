@@ -2,10 +2,19 @@ const { Schema, model } = require('mongoose');
 
 const GlobalCommandSchema = new Schema(
   {
-    name: String,
-    aliases: [String],
-    replyText: String,
-    requiredRole: String,
+    name: {
+      type: String,
+      required: true,
+    },
+    aliases: [
+      {
+        type: [String],
+      },
+    ],
+    requiredRole: {
+      type: String,
+      default: 'viewer',
+    },
   },
   {
     versionKey: false,

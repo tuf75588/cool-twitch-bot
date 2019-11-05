@@ -17,4 +17,10 @@ module.exports = [
     replyText: '',
     requiredRole: 'manager',
   },
+  {
+    name: 'setgame',
+    aliases: ['setcategory', 'setdirectory', 'setplaying'],
+    replyText: '',
+    requiredRole: 'manager',
+  },
 ];

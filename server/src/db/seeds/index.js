@@ -1,4 +1,16 @@
-const db = require('../index');
-const globalCommands = require('./globalCommands');
+const db = require('../');
+const globalCommandModel = require('../globalCommand');
+const globalCommandList = require('./globalCommands');
 
-globalCommands.map((c) => console.log(c));
+(async () => {
+  console.log('seeding global commands...');
+  try {
+    await globalCommandModel.collection.drop();
+    await globalCommandModel.create(...globalCommandList);
+    console.log('commands seeded!');
+  } catch (error) {
+    console.error('error seeding commands', error);
+  } finally {
+    db.close();
+  }
+})();
