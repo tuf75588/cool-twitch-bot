@@ -85,6 +85,7 @@ router.patch(
   async (req, res, next) => {
     const { twitchId, commandId } = req.params;
     const { name, aliases, replyText, requiredRole } = req.body;
+
     try {
       //use findOneAndUpdate so a user can't update someone elses command
       const updated = await commandModel.findOneAndUpdate(
