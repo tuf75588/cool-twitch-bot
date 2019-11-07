@@ -3,6 +3,7 @@ const config = require('../config');
 const botModel = require('../db/bot');
 const twitchAPI = require('../lib/twitch-api');
 const channelModel = require('../db/channel');
+const commandModel = require('../db/command');
 const { sleep } = require('../lib/utils');
 /** @type {import('tmi.js').Client} */
 
@@ -96,13 +97,19 @@ async function messageHandler(channel, tags, message, self) {
   //make sure its a command starting with the appropriate prefix
   if (message.startsWith('!')) {
     const arguments = message.slice(1).split(' ');
-    const commandName = arguments.shift().toLowerCase();
+    const command = arguments.shift().toLowerCase();
     const channelId = tags['room-id'];
-    if (commandName === 'echo') {
-      //so viewers cannot inject any unwanted commands from the bot
-      await client.say(channel, ' ' + arguments.join(' '));
-    }
+    commandHandler(tags['room-id'], command);
   }
+}
+
+/**
+ *
+ * @param {string} command the command that is executed from the user
+ * @param {string} channel the id of the channel the command is being created for
+ */
+async function commandHandler(channelId, command, args) {
+  await commandModel.findOne({ channelId, name: command });
 }
 
 module.exports = {

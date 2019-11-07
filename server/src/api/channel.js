@@ -94,14 +94,37 @@ router.patch(
           channelId: twitchId,
         },
         Object.fromEntries(
-          Object.entries({ name, aliases, requiredRole, replyText }),
-        ).filter((name) => name[1] !== undefined),
+          Object.entries({ name, aliases, requiredRole, replyText }).filter(
+            (name) => name[1] !== undefined,
+          ),
+        ),
         { new: true },
       );
       if (!updated) {
         return next();
       }
       res.json(updated);
+    } catch (error) {
+      return next(error);
+    }
+  },
+);
+
+router.delete(
+  '/:twitchId/commands/:commandId',
+  ensureUserAccess,
+  async (req, res, next) => {
+    const { twitchId, commandId } = req.params;
+    try {
+      const { deletedCount } = await commandModel.deleteOne({
+        _id: commandId,
+        channelId: twitchId,
+      });
+      console.log({ deletedCount });
+      if (!deletedCount) {
+        return next();
+      }
+      res.sendStatus(204);
     } catch (error) {
       return next(error);
     }
