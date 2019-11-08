@@ -4,6 +4,7 @@ const botModel = require('../db/bot');
 const twitchAPI = require('../lib/twitch-api');
 const channelModel = require('../db/channel');
 const commandModel = require('../db/command');
+const globalCommandModel = require('../db/globalCommand');
 const { sleep } = require('../lib/utils');
 /** @type {import('tmi.js').Client} */
 
@@ -108,8 +109,22 @@ async function messageHandler(channel, tags, message, self) {
  * @param {string} command the command that is executed from the user
  * @param {string} channel the id of the channel the command is being created for
  */
-async function commandHandler(channelId, command, args) {
-  await commandModel.findOne({ channelId, name: command });
+async function commandHandler(context) {
+  const { reply, commandName, channelId } = context;
+  const [globalCommand, channelCommand] = await Promise.all([
+    commandModel.findOne({ name: commandName, channelId }),
+    globalCommandModel.findOne({ name: commandName }),
+  ]);
+  const command = globalCommand || channelCommand;
+  //if there's no command, return
+  if (!command) {
+    return;
+  }
+  if (command.replyText) {
+    return reply(command.replyText);
+  } else {
+    //do stuff
+  }
 }
 
 module.exports = {

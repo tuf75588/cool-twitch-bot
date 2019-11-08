@@ -3,12 +3,14 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-
+const twitchAPI = require('./lib/twitch-api');
 const middleware = require('./middleware');
 require('dotenv').config();
 const config = require('./config');
 require('./db');
 const app = express();
+
+twitchAPI.getStream('eviltoaster');
 
 const bot = require('./bot');
 bot.init();
