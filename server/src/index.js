@@ -10,8 +10,6 @@ const config = require('./config');
 require('./db');
 const app = express();
 
-twitchAPI.getStream('eviltoaster');
-
 const bot = require('./bot');
 bot.init();
 app.use(cors());

@@ -123,7 +123,9 @@ async function commandHandler(context) {
   if (command.replyText) {
     return reply(command.replyText);
   } else {
-    //do stuff
+    //if we get here it must be a global command
+    const commandFn = require(`./commands/${command.name}`);
+    commandFn(context);
   }
 }
 

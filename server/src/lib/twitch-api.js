@@ -67,17 +67,23 @@ async function getUsers({ id = [], token }) {
   return data;
 }
 
-async function getStream(user_login) {
+/**
+ *
+ * @param {string} user_id -- user id for a specific channel
+ * @return {TwitchStream}
+  *@see https://dev.twitch.tv/docs/api/reference#get-streams
+
+ */
+async function getStream(user_id) {
   const qs = new URLSearchParams({
-    user_login,
+    user_id,
   });
   const { data } = await helix.get(`/streams?${qs}`, {
     headers: {
       'Client-ID': config.TWITCH_CLIENT_ID,
     },
   });
-  console.log(data);
-  return data;
+  return data[0] || null;
 }
 
 module.exports = {
