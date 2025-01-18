@@ -27,7 +27,7 @@
     "express": "^5.0.1",
     "helmet": "^3.21.2",
     "jsonwebtoken": "^9.0.0",
-    "mongoose": "^8.8.3",
+    "mongoose": "^8.9.5",
     "morgan": "^1.9.1",
     "mustache": "^3.1.0",
     "saslprep": "^1.0.3",
